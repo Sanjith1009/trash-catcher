@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'run_task_node = trash_catcher_pkg.task_node:main',
+            'task_node = trash_catcher_pkg.task_node:main',
         ],
     },
 )

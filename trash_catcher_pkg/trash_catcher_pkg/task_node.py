@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 import math
 
-from arduino_driver import ArduinoDriver
+from trash_catcher_pkg.arduino_driver import ArduinoDriver
 
 class MotorTaskNode(Node):
     def __init__(self):
@@ -12,7 +12,7 @@ class MotorTaskNode(Node):
         self.port = 'socket://localhost:9999'
         
         # Stepper kinematics configuration
-        self.wheel_diameter_mm = 65.0[cite: 2]
+        self.wheel_diameter_mm = 65.0
         self.steps_per_rev = 1600.0  # 200 steps/rev * 8 microsteps
         self.steps_per_mm = self.steps_per_rev / (math.pi * self.wheel_diameter_mm)
         
@@ -27,11 +27,11 @@ class MotorTaskNode(Node):
 
         self.get_logger().info("Connected to local bridge socket. Starting Task Sequence.")
 
-        self.state = 'INIT'[cite: 2]
+        self.state = 'INIT'
         self.target_steps = 0
         self.wait_start_time = 0.0
         
-        self.timer = self.create_timer(0.02, self.control_loop)[cite: 2]
+        self.timer = self.create_timer(0.02, self.control_loop)
 
     def control_loop(self):
         current_steps = self.driver.get_latest_ticks()
@@ -41,34 +41,34 @@ class MotorTaskNode(Node):
 
         # STATE: INITIALIZE
         if self.state == 'INIT':
-            self.get_logger().info("Moving forward 100mm...")[cite: 2]
-            distance_mm = 100.0[cite: 2]
+            self.get_logger().info("Moving forward 100mm...")
+            distance_mm = 100.0
             self.target_steps = current_steps + (distance_mm * self.steps_per_mm)
-            self.state = 'MOVING_FORWARD'[cite: 2]
+            self.state = 'MOVING_FORWARD'
 
         # STATE: MOVING FORWARD
         elif self.state == 'MOVING_FORWARD':
             if self.drive_to_target(current_steps, self.target_steps):
-                self.get_logger().info("Arrived. Waiting 2 seconds...")[cite: 2]
-                self.driver.send_velocity(0.0)[cite: 2]
-                self.wait_start_time = self.get_clock().now().nanoseconds / 1e9[cite: 2]
-                self.state = 'WAITING'[cite: 2]
+                self.get_logger().info("Arrived. Waiting 2 seconds...")
+                self.driver.send_velocity(0.0)
+                self.wait_start_time = self.get_clock().now().nanoseconds / 1e9
+                self.state = 'WAITING'
 
         # STATE: WAITING
         elif self.state == 'WAITING':
-            current_time = self.get_clock().now().nanoseconds / 1e9[cite: 2]
-            if (current_time - self.wait_start_time) >= 2.0:[cite: 2]
-                self.get_logger().info("Wait complete. Moving backward 100mm...")[cite: 2]
-                distance_mm = -100.0[cite: 2]
+            current_time = self.get_clock().now().nanoseconds / 1e9
+            if (current_time - self.wait_start_time) >= 2.0:
+                self.get_logger().info("Wait complete. Moving backward 100mm...")
+                distance_mm = -100.0
                 self.target_steps = current_steps + (distance_mm * self.steps_per_mm)
-                self.state = 'MOVING_BACKWARD'[cite: 2]
+                self.state = 'MOVING_BACKWARD'
 
         # STATE: MOVING BACKWARD
         elif self.state == 'MOVING_BACKWARD':
             if self.drive_to_target(current_steps, self.target_steps):
-                self.get_logger().info("Sequence complete.")[cite: 2]
-                self.driver.send_velocity(0.0)[cite: 2]
-                self.state = 'DONE'[cite: 2]
+                self.get_logger().info("Sequence complete.")
+                self.driver.send_velocity(0.0)
+                self.state = 'DONE'
 
         # STATE: DONE
         elif self.state == 'DONE':
@@ -89,19 +89,19 @@ class MotorTaskNode(Node):
         return False
 
     def destroy_node(self):
-        self.driver.close()[cite: 2]
-        super().destroy_node()[cite: 2]
+        self.driver.close()
+        super().destroy_node()
 
 def main(args=None):
-    rclpy.init(args=args)[cite: 2]
-    node = MotorTaskNode()[cite: 2]
+    rclpy.init(args=args)
+    node = MotorTaskNode()
     try:
-        rclpy.spin(node)[cite: 2]
+        rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     finally:
-        node.destroy_node()[cite: 2]
-        rclpy.shutdown()[cite: 2]
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
-    main()[cite: 2]
+    main()
