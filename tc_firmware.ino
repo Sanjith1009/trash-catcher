@@ -1,8 +1,8 @@
 #include <AccelStepper.h>
 
 // --- Pin Definitions ---
-const int STEP_PIN = 5; 
-const int DIR_PIN = 4;  
+const int STEP_PIN = 40; 
+const int DIR_PIN = 44;  
 
 // Initialize AccelStepper in DRIVER mode
 AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
