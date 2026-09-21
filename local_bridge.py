@@ -2,7 +2,7 @@ import serial
 import socket
 import time
 
-COM_PORT = 'COM3'  # Update to your local laptop COM port
+COM_PORT = 'COM7'  # Update to your local laptop COM port
 BAUD_RATE = 115200
 TCP_PORT = 9999
 
